@@ -1,7 +1,10 @@
 package com.yrz.orderinfo.service.impl;
 
+import com.yrz.orderinfo.client.ProductClient;
+import com.yrz.orderinfo.common.DecreaseStockInput;
 import com.yrz.orderinfo.dataobject.OrderDetail;
 import com.yrz.orderinfo.dataobject.OrderMaster;
+import com.yrz.orderinfo.dataobject.ProductInfoOutput;
 import com.yrz.orderinfo.dto.OrderDTO;
 import com.yrz.orderinfo.enums.OrderStatusEnum;
 import com.yrz.orderinfo.enums.PayStatusEnum;
@@ -32,16 +35,18 @@ public class OrderServiceImpl implements OrderService {
     private OrderMasterRepository orderMasterRepository;
 
 
+    @Autowired
+    private ProductClient productClient;
 
     @Override
     public OrderDTO create(OrderDTO orderDTO) {
         String orderId = KeyUtil.genUniqueKey();
 
-       /*//查询商品信息(调用商品服务)
+       //查询商品信息(调用商品服务)
         List<String> productIdList = orderDTO.getOrderDetailList().stream()
                 .map(OrderDetail::getProductId)
                 .collect(Collectors.toList());
-        List<ProductInfoOutput> productInfoList = productClient.listForOrder(productIdList);
+        List<ProductInfoOutput> productInfoList = productClient.getListForOrder(productIdList);
 
        //计算总价
         BigDecimal orderAmout = new BigDecimal(BigInteger.ZERO);
@@ -66,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(e -> new DecreaseStockInput(e.getProductId(), e.getProductQuantity()))
                 .collect(Collectors.toList());
         productClient.decreaseStock(decreaseStockInputList);
-*/
+
         //订单入库
         OrderMaster orderMaster = new OrderMaster();
         orderDTO.setOrderId(orderId);
